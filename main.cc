@@ -10,8 +10,9 @@
 #include "vect3.h"
 #include "color.h"
 #include "ray.h"
-#include "color.h"
+#include "intersect.h"
 
+OBJ obj;
 
 
 bool hit_sphere(const p3& center, double radius, const ray& r) {
