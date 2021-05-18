@@ -1,40 +1,40 @@
 #pragma once
 
-#include "vect3.h"
+#include <glm/glm.hpp>
+
 #include "ray.h"
 
 #include <iostream>
 
-bool RayIntersectsTriangle(ray* rayInput, 
-                           vect3* inTriangle,
-                           vect3& outIntersectionPoint)
+bool RayIntersectsTriangle(ray rayInput, 
+                           glm::vec3 vertex0,
+                           glm::vec3 vertex1,
+                           glm::vec3 vertex2,
+                           glm::vec3& outIntersectionPoint)
 {
     const float EPSILON = 0.0000001;
-    vect3 vertex0 = inTriangle[0];
-    vect3 vertex1 = inTriangle[1];  
-    vect3 vertex2 = inTriangle[2];
-    vect3 edge1, edge2, h, s, q;
+    glm::vec3 edge1, edge2, h, s, q;
     float a,f,u,v;
     edge1 = vertex1 - vertex0;
     edge2 = vertex2 - vertex0;
-    h = rayInput->direction().cross(edge2);
-    a = edge1.dot(h);
+    h = glm::cross(rayInput.direction(),edge2);
+    a = glm::dot(edge1,h);
     if (a > -EPSILON && a < EPSILON)
         return false;    // This ray is parallel to this triangle.
     f = 1.0/a;
-    s = rayInput->origin() - vertex0;
-    u = f * s.dot(h);
+    s = rayInput.origin() - vertex0;
+    u = f * glm::dot(s,h);
     if (u < 0.0 || u > 1.0)
         return false;
-    q = s.cross(edge1);
-    v = f * rayInput->direction().dot(q);
+    q = glm::cross(s,edge1);
+    v = f * glm::dot(rayInput.direction(),q);
     if (v < 0.0 || u + v > 1.0)
         return false;
     // At this stage we can compute t to find out where the intersection point is on the line.
-    float t = f * edge2.dot(q);
+    float t = f * glm::dot(edge2,q);
     if (t > EPSILON) // ray intersection
     {
-        outIntersectionPoint = rayInput->at(t);
+        outIntersectionPoint = rayInput.at(t);
         return true;
     }
     else // This means that there is a line intersection but not a ray intersection.

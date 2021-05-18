@@ -2,33 +2,39 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/polar_coordinates.hpp>
+
 #include <vector>
 #include <iostream>
 #include <cmath>
 
 #include "png.h"
-#include "vect3.h"
 #include "color.h"
 #include "ray.h"
 #include "intersect.h"
+#include "obj.h"
 
 OBJ obj;
 
 
-bool hit_sphere(const p3& center, double radius, const ray& r) {
-    vect3 oc = r.origin() - center;
-    auto a = r.direction().dot(r.direction());
-    auto b = 2.0 * oc.dot(r.direction());
-    auto c = oc.dot(oc) - radius*radius;
+bool hit_sphere(const glm::vec3& center, double radius, const ray& r) {
+    glm::vec3 oc = r.origin() - center;
+    auto a = glm::dot(r.direction(),r.direction());
+    auto b = 2.0 * glm::dot(oc,r.direction());
+    auto c = glm::dot(oc,oc) - radius*radius;
     auto discriminant = b*b - 4*a*c;
     return (discriminant > 0);
 }
 
 color ray_color(const ray& r) {
-	if (hit_sphere(p3(0, 0, -1), 0.5, r))
+	if (hit_sphere(glm::vec3(0, 0, -1), 0.5, r))
 	return color(1, 0, 0);
-    vect3 unit_direction = r.direction().unit_vector();
-    auto t = 0.5 * (unit_direction.y() + 1.0);
+    //glm::vec3 unit_direction = r.direction().unit_vector();
+    auto t = 0.5;
     return color(1.0, 1.0, 1.0) * (1.0 - t)  + color(0.5, 0.7, 1.0) * t;
 }
 
@@ -93,10 +99,14 @@ int main() {
     auto viewport_w = aspect_ratio * viewport_h;
     auto focal_length = 1.0;
 
-    auto origin = p3(0, 0, 0);
-    auto horizontal = vect3(viewport_w, 0, 0);
-    auto vertical = vect3(0, viewport_h, 0);
-    auto lower_left_corner = origin - horizontal/2 - vertical/2 - vect3(0, 0, focal_length);
+    auto origin = glm::vec3(0, 0, 0);
+    auto horizontal = glm::vec3(viewport_w, 0, 0);
+    auto vertical = glm::vec3(0, viewport_h, 0);
+    auto lower_left_corner = origin - horizontal/2.0f - vertical/2.0f - glm::vec3(0, 0, focal_length);
+    
+	glm::mat4 xf = glm::rotate(glm::radians(0.0f),glm::vec3(1.0f,0.0f,0.0f));
+	obj.load("../model/cube.obj", xf);
+	int trianglesSize = obj.faces().size();
 
     // Render
     std::cout << "\nStarting render...\n";
@@ -105,10 +115,26 @@ int main() {
     for (int j = image_h - 1; j >= 0; --j) {
         // std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_w; ++i) {
-            auto u = double(i) / (image_w-1);
-            auto v = double(j) / (image_h-1);
+            float u = float(i) / (image_w-1);
+            float v = float(j) / (image_h-1);
             ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
             color pixel_color = ray_color(r);
+            
+            for (int k = 0; k < trianglesSize - 2; k+=3) {
+				
+				glm::vec3 v0 = obj.faces().data()[k];
+				glm::vec3 v1 = obj.faces().data()[k+1];
+				glm::vec3 v2 = obj.faces().data()[k+2];
+				glm::vec3 intersectionPoint = glm::vec3(0.0f,0.0f,0.0f);
+				
+				bool intersected = RayIntersectsTriangle(r, v0, v1, v2, intersectionPoint);
+				
+				if (intersected){
+					std::cout << "intersected...\n";
+				}
+			}
+            
+            
             image.set(i, j, pixel_color[0], pixel_color[1], pixel_color[2]);
             // write_color(std::cout, pixel_color);
         }
