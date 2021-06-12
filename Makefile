@@ -2,15 +2,16 @@ PROG=ogl
 SRCS= \
 main.cc \
 obj.cc \
-vect3.cc \
 ray.cc \
-sphere.cc \
 hittable.cc \
-hittable_list.cc \
+obj.cc \
 camera.cc \
 png.cc 
 
-#world.cc
+# vect3.cc \
+# sphere.cc \
+# hittable_list.cc \
+# world.cc
 
 CXX:=g++
 CXXFLAGS:=-O3 -march=native

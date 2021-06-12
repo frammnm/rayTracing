@@ -1,3 +1,5 @@
+#pragma once
+
 #include <random>
 #include <cmath>
 #include <limits>
@@ -5,7 +7,10 @@
 
 
 #include "ray.h"
-#include "vect3.h"
+// #include "vect3.h"
+
+using p3 = glm::vec3;   // 3D point
+using color = glm::vec3;    // RGB color
 
 // Usings
 
@@ -15,8 +20,8 @@ using std::sqrt;
 
 // Constants
 
-const double infinity = std::numeric_limits<double>::infinity();
-const double pi = 3.1415926535897932385;
+const float infinity = std::numeric_limits<float>::infinity();
+const float pi = 3.1415926535897932385;
 
 // Utility Functions
 

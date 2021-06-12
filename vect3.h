@@ -55,4 +55,4 @@ vect3 operator*(double t, const vect3 &v);
 
 // Type aliases for vec3
 using p3 = vect3;   // 3D point
-using color = vect3;    // RGB color
+using color = glm::vec3 ;    // RGB color
