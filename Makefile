@@ -4,6 +4,10 @@ main.cc \
 obj.cc \
 vect3.cc \
 ray.cc \
+sphere.cc \
+hittable.cc \
+hittable_list.cc \
+camera.cc \
 png.cc 
 
 #world.cc
