@@ -85,8 +85,11 @@ int main() {
     // auto vertical = glm::vec3(0, viewport_h, 0);
     // auto lower_left_corner = origin - horizontal/2.0f - vertical/2.0f - glm::vec3(0, 0, focal_length);
     
-	glm::mat4 xf = glm::rotate(glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	obj.load("./model/teapot.obj", xf);
+    glm::mat4 traslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	glm::mat4 rotation = glm::rotate(glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	
+	obj.load("./model/teapot.obj", traslation*rotation*scale);
 	int triangle_size = obj.faces().size();
     glm::vec3 obj_color = glm::vec3(1.0f, 0.0f, 0.0f); 
 
@@ -165,7 +168,9 @@ int main() {
                                         light_color,
                                         obj_color);
                 image.set(i, j, pixel_color[0], pixel_color[1], pixel_color[2]);
-            }
+            }else{				
+                image.set(i, j, 0.0f, 0.8f, 0.9f);
+			}
 
         }
     }
